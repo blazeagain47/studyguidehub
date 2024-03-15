@@ -1,0 +1,12 @@
+----------one time setup ---------------
+
+npm init -y
+
+npm install express google-auth-library
+
+----------everytime to host -------------
+
+cd Documents\proj
+
+node server.js
+
