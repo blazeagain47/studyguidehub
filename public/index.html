@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Google Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Google Login Home Page</h1>
+    </div>
+    <div id="g_id_onload"
+         data-client_id="766379416504-rhddsp702ud2d9am1lqf4dro9ktgcsol.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <script>
+      function handleCredentialResponse(response) {
+          fetch('/verifyGoogleToken', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({token: response.credential}),
+          })
+          .then(response => response.json())
+          .then(data => {
+              if(data.success) {
+                  sessionStorage.setItem('userEmail', data.email);
+                  window.location.href = 'profile.html';
+              } else {
+                  console.error('Login failed: ', data.error);
+              }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      window.onload = function () {
+          google.accounts.id.initialize({
+              client_id: "766379416504-rhddsp702ud2d9am1lqf4dro9ktgcsol.apps.googleusercontent.com",
+              callback: handleCredentialResponse
+          });
+          google.accounts.id.renderButton(
+              document.getElementById("g_id_onload"), {
+                  theme: "outline",
+                  size: "large",
+              }
+          );
+          google.accounts.id.prompt();
+      }
+    </script>
+</body>
+</html>
